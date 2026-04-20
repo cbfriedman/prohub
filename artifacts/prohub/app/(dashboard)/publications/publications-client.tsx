@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useMemo, useState, useEffect } from 'react'
 import Link from 'next/link'
 import { PublicationsTable } from '@/components/publications-table'
 import { AdminToggle } from '@/components/admin-toggle'
@@ -34,8 +34,13 @@ interface PublicationsPageClientProps {
 }
 
 export function PublicationsPageClient({ publications, activeCampaign }: PublicationsPageClientProps) {
-  const { isAdmin } = useAdminStore()
+  const { isAdmin: isAdminRaw } = useAdminStore()
+  const [mounted, setMounted] = useState(false)
   const [isInfoOpen, setIsInfoOpen] = useState(false)
+
+  useEffect(() => { setMounted(true) }, [])
+
+  const isAdmin = mounted && isAdminRaw
 
   // Filter out free publications for non-admin users
   const visiblePublications = useMemo(() => {

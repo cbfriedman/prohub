@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Shield, ShieldOff, Lock } from 'lucide-react'
+import { Shield, ShieldOff, Lock, Eye, EyeOff } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -19,12 +19,14 @@ export function AdminToggle() {
   const { isAdmin, login, logout } = useAdminStore()
   const [showDialog, setShowDialog] = useState(false)
   const [password, setPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
   const { toast } = useToast()
 
   const handleLogin = () => {
     if (login(password)) {
       setShowDialog(false)
       setPassword('')
+      setShowPassword(false)
       toast({
         title: 'Admin Access Granted',
         description: 'You can now view internal pricing details.',
@@ -72,7 +74,7 @@ export function AdminToggle() {
         Admin Access
       </Button>
 
-      <Dialog open={showDialog} onOpenChange={setShowDialog}>
+      <Dialog open={showDialog} onOpenChange={(open) => { setShowDialog(open); if (!open) { setPassword(''); setShowPassword(false) } }}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
@@ -86,14 +88,25 @@ export function AdminToggle() {
           <div className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="Enter admin password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleLogin()}
-              />
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder="Enter admin password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleLogin()}
+                  className="pr-10"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  tabIndex={-1}
+                >
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
             </div>
             <Button onClick={handleLogin} className="w-full">
               Access Admin Mode

@@ -39,11 +39,15 @@ const adminNavItems = [
 
 export function AppSidebar() {
   const pathname = usePathname()
-  const { isAdmin } = useAdminStore()
+  const { isAdmin: isAdminRaw } = useAdminStore()
   const { items, setIsOpen } = useCartStore()
   const [user, setUser] = useState<{ email?: string } | null>(null)
+  const [mounted, setMounted] = useState(false)
+
+  const isAdmin = mounted && isAdminRaw
 
   useEffect(() => {
+    setMounted(true)
     const supabase = createClient()
     supabase.auth.getUser().then(({ data }) => {
       setUser(data.user)

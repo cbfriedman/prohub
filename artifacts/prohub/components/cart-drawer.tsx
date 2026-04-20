@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useTransition } from 'react'
+import { useEffect, useState, useTransition } from 'react'
 import Link from 'next/link'
 import { ShoppingCart, X, Trash2, Loader2, ExternalLink } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -19,9 +19,11 @@ import { useToast } from '@/hooks/use-toast'
 
 export function CartDrawer() {
   const { items, setItems, isOpen, setIsOpen } = useCartStore()
-  const { isAdmin } = useAdminStore()
+  const { isAdmin: isAdminRaw } = useAdminStore()
   const [isPending, startTransition] = useTransition()
   const { toast } = useToast()
+  const [mounted, setMounted] = useState(false)
+  const isAdmin = mounted && isAdminRaw
 
   // Helper to format placement type
   const formatPlacementType = (type: string | null | undefined) => {
@@ -30,8 +32,9 @@ export function CartDrawer() {
     return 'Unknown'
   }
 
-  // Load cart on mount
+  // Load cart on mount and set mounted flag
   useEffect(() => {
+    setMounted(true)
     startTransition(async () => {
       const cartItems = await getCartItems()
       setItems(cartItems.map(item => ({
