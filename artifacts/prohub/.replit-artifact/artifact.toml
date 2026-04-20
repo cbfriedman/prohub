@@ -30,7 +30,9 @@ args = ["pnpm", "--filter", "@workspace/prohub", "run", "start"]
 
 [services.production.run.env]
 PORT = "20627"
+HOSTNAME = "0.0.0.0"
 NODE_ENV = "production"
 
 [services.env]
 PORT = "20627"
+HOSTNAME = "0.0.0.0"
